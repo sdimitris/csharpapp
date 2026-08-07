@@ -1,0 +1,15 @@
+services:
+  csharpapp-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: csharpapp-api:latest
+    container_name: csharpapp-api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Override third-party credentials without editing appsettings.json:
+      # - RestApiSettings__Username=john@mail.com
+      # - RestApiSettings__Password=changeme
+    restart: unless-stopped

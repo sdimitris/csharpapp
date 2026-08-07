@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+**/*.user
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+**/CSharpApp.Tests/
+README.md
+postman.json
+insomnia.json
