@@ -1,11 +1,12 @@
 namespace CSharpApp.Core.Interfaces;
 
 /// <summary>
-/// Abstraction over the third-party products catalog. Implementations are expected to
-/// return a <see cref="Result{TValue}"/> so callers never need to rely on exceptions
-/// for expected failure modes (not found, transient network failures, etc.).
+/// Pure HTTP gateway to the third-party products catalog. Responsible only for translating
+/// calls into HTTP requests and HTTP responses into <see cref="Result{TValue}"/> — no
+/// caching, no business rules. Consumed by <see cref="IProductsService"/>, never directly
+/// by endpoints.
 /// </summary>
-public interface IProductsService
+public interface IProductsApiClient
 {
     Task<Result<IReadOnlyCollection<Product>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default);
 
