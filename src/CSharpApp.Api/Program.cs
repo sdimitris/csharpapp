@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
@@ -32,9 +34,38 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseStatusCodePages();
-
+// Outermost middleware: times the whole request (including exception handling and
+// endpoint execution) and, because it sits outside UseExceptionHandler below, its
+// `finally` block always observes the final response status code — even for requests
+// that ended in an unhandled exception.
 app.UseRequestPerformanceLogging();
+
+// Converts unhandled exceptions into a ProblemDetails 500 response instead of letting
+// them crash the request with no defined status code.
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+        var problemDetailsService = context.RequestServices.GetRequiredService<IProblemDetailsService>();
+        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+        {
+            HttpContext = context,
+            Exception = exception,
+            ProblemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An unexpected error occurred while processing the request.",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1"
+            }
+        });
+    });
+});
+
+app.UseStatusCodePages();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
 

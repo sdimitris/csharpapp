@@ -5,19 +5,23 @@ public static class HttpConfiguration
     public static IServiceCollection AddHttpConfiguration(this IServiceCollection services)
     {
         services.AddTransient<AuthenticationDelegatingHandler>();
+        services.AddTransient<ThirdPartyRequestPerformanceHandler>();
 
         // Dedicated client for the login endpoint: must not go through the auth handler,
         // otherwise obtaining a token would recursively require a token.
         services.AddHttpClient(HttpClientNames.Auth, ConfigureBaseClient)
+            .AddHttpMessageHandler<ThirdPartyRequestPerformanceHandler>()
             .AddPolicyHandler(GetRetryPolicy)
             .AddPolicyHandler(GetCircuitBreakerPolicy);
 
         services.AddHttpClient<IProductsApiClient, ProductsApiClient>(HttpClientNames.Products, ConfigureBaseClient)
+            .AddHttpMessageHandler<ThirdPartyRequestPerformanceHandler>()
             .AddHttpMessageHandler<AuthenticationDelegatingHandler>()
             .AddPolicyHandler(GetRetryPolicy)
             .AddPolicyHandler(GetCircuitBreakerPolicy);
 
         services.AddHttpClient<ICategoriesApiClient, CategoriesApiClient>(HttpClientNames.Categories, ConfigureBaseClient)
+            .AddHttpMessageHandler<ThirdPartyRequestPerformanceHandler>()
             .AddHttpMessageHandler<AuthenticationDelegatingHandler>()
             .AddPolicyHandler(GetRetryPolicy)
             .AddPolicyHandler(GetCircuitBreakerPolicy);

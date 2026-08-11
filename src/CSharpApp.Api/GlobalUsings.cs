@@ -14,4 +14,6 @@ global using CSharpApp.Core.Dtos.Requests;
 global using CSharpApp.Core.Interfaces;
 global using CSharpApp.Application.Common;
 global using CSharpApp.Infrastructure.Configuration;
+global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.AspNetCore.Mvc;
 global using Serilog;
