@@ -48,7 +48,7 @@ We must measure and log the performance of the requests. Create a middleware to 
 CSharpApp.sln
 src/
   CSharpApp.Api             (endpoints, middleware, contracts, mappings, validation, DI wiring)
-  CSharpApp.Application      (use-case services: caching, cache-generation invalidation)
+  CSharpApp.Application      (use-case services: single-item cache-aside via ICacheService)
   CSharpApp.Core             (domain: DTOs, interfaces, Result pattern, settings)
   CSharpApp.Infrastructure    (HttpClient-based API gateways, JWT auth, Polly)
 tests/
@@ -69,11 +69,11 @@ clients, by design, so every moving part is simple and easy to reason about end 
   upstream failures).
 * **CSharpApp.Application** – Use-case layer: `ProductsService`/`CategoriesService`
   implement the Core service interfaces by consuming the Infrastructure API clients and
-  adding cross-cutting concerns — currently **cache-aside via `IMemoryCache`**. List
-  results (`GetAllAsync`, one cache entry per distinct `offset`/`limit` page) and
-  single-item results are cached for a few minutes; a successful `CreateAsync` bumps a
-  per-resource cache "generation" counter, instantly invalidating every previously cached
-  list page (regardless of pagination) without needing to enumerate/remove individual keys.
+  adding cross-cutting concerns — currently **cache-aside via `ICacheService`** (backed by
+  `IMemoryCache`). Only single-item lookups (`GetByIdAsync`) are cached, for a few minutes;
+  list results (`GetAllAsync`) are always fetched fresh from the API, since paginated list
+  caching added invalidation complexity (a per-resource cache "generation" counter bumped
+  on every `CreateAsync`) without enough benefit to justify it.
 * **CSharpApp.Infrastructure** – Talks to the third-party API (`api.escuelajs.co`) using
   **typed `HttpClient`s created through `IHttpClientFactory`** (connections/handlers are
   pooled and reused, instead of `new HttpClient()` per call). Resiliency is provided by
@@ -98,8 +98,8 @@ clients, by design, so every moving part is simple and easy to reason about end 
   * `RequestPerformanceMiddleware` measures and logs (via Serilog) the elapsed time of
     every request.
 * **CSharpApp.Tests** – xUnit + Moq unit tests covering the Result pattern, the Application
-  services (caching/invalidation, including per-page pagination caching), the HTTP API
-  clients (including pagination query-string building) and the JWT auth provider/handler
+  services (single-item cache-aside via `ICacheService`), the HTTP API clients (including
+  pagination query-string building) and the JWT auth provider/handler
   (using a fake `HttpMessageHandler`, no network calls).
 
 ## Endpoints

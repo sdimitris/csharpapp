@@ -32,6 +32,7 @@ public static class ResultExtensions
             {
                 [result.Error.Code] = [result.Error.Message]
             }),
+            
             ErrorType.NotFound => Results.Problem(result.Error.Message, statusCode: StatusCodes.Status404NotFound, title: result.Error.Code),
             ErrorType.Conflict => Results.Problem(result.Error.Message, statusCode: StatusCodes.Status409Conflict, title: result.Error.Code),
             _ => Results.Problem(result.Error.Message, statusCode: StatusCodes.Status502BadGateway, title: result.Error.Code)

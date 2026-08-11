@@ -10,6 +10,7 @@ public static class ApplicationServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddMemoryCache();
+        services.AddSingleton<ICacheService, CacheService>();
 
         services.AddScoped<IProductsService, Products.ProductsService>();
         services.AddScoped<ICategoriesService, Categories.CategoriesService>();
