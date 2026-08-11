@@ -14,7 +14,7 @@ public sealed class CategoriesApiClient(HttpClient httpClient, IOptions<RestApiS
         try
         {
             var response = await httpClient.GetAsync(BuildListUrl(_settings.Categories!, offset, limit), cancellationToken);
-            var result = await response.ToResultAsync<List<Category>>(cancellationToken);
+            var result = await response.ToResultAsync<List<Category>>(logger, cancellationToken);
 
             return result.IsSuccess
                 ? Result.Success<IReadOnlyCollection<Category>>(result.Value)
@@ -22,9 +22,9 @@ public sealed class CategoriesApiClient(HttpClient httpClient, IOptions<RestApiS
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party categories endpoint.");
+            logger.LogError(ex, "Unable to reach the categories service.");
             return Result.Failure<IReadOnlyCollection<Category>>(
-                Error.Failure("Categories.Unreachable", "Unable to reach the third-party categories endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
@@ -33,13 +33,13 @@ public sealed class CategoriesApiClient(HttpClient httpClient, IOptions<RestApiS
         try
         {
             var response = await httpClient.GetAsync($"{_settings.Categories}/{id}", cancellationToken);
-            return await response.ToResultAsync<Category>(cancellationToken);
+            return await response.ToResultAsync<Category>(logger, cancellationToken);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party categories endpoint.");
+            logger.LogError(ex, "Unable to reach the categories service.");
             return Result.Failure<Category>(
-                Error.Failure("Categories.Unreachable", "Unable to reach the third-party categories endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
@@ -48,13 +48,13 @@ public sealed class CategoriesApiClient(HttpClient httpClient, IOptions<RestApiS
         try
         {
             var response = await httpClient.PostAsJsonAsync(_settings.Categories, request, cancellationToken);
-            return await response.ToResultAsync<Category>(cancellationToken);
+            return await response.ToResultAsync<Category>(logger, cancellationToken);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party categories endpoint.");
+            logger.LogError(ex, "Unable to reach the categories service.");
             return Result.Failure<Category>(
-                Error.Failure("Categories.Unreachable", "Unable to reach the third-party categories endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 

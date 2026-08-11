@@ -16,7 +16,7 @@ public sealed class ProductsApiClient(HttpClient httpClient, IOptions<RestApiSet
         try
         {
             var response = await httpClient.GetAsync(BuildListUrl(_settings.Products!, offset, limit), cancellationToken);
-            var result = await response.ToResultAsync<List<Product>>(cancellationToken);
+            var result = await response.ToResultAsync<List<Product>>(logger, cancellationToken);
 
             return result.IsSuccess
                 ? Result.Success<IReadOnlyCollection<Product>>(result.Value)
@@ -24,9 +24,9 @@ public sealed class ProductsApiClient(HttpClient httpClient, IOptions<RestApiSet
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party products endpoint.");
+            logger.LogError(ex, "Unable to reach the products service.");
             return Result.Failure<IReadOnlyCollection<Product>>(
-                Error.Failure("Products.Unreachable", "Unable to reach the third-party products endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
@@ -35,13 +35,13 @@ public sealed class ProductsApiClient(HttpClient httpClient, IOptions<RestApiSet
         try
         {
             var response = await httpClient.GetAsync($"{_settings.Products}/{id}", cancellationToken);
-            return await response.ToResultAsync<Product>(cancellationToken);
+            return await response.ToResultAsync<Product>(logger, cancellationToken);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party products endpoint.");
+            logger.LogError(ex, "Unable to reach the products service.");
             return Result.Failure<Product>(
-                Error.Failure("Products.Unreachable", "Unable to reach the third-party products endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
@@ -50,13 +50,13 @@ public sealed class ProductsApiClient(HttpClient httpClient, IOptions<RestApiSet
         try
         {
             var response = await httpClient.PostAsJsonAsync(_settings.Products, request, cancellationToken);
-            return await response.ToResultAsync<Product>(cancellationToken);
+            return await response.ToResultAsync<Product>(logger, cancellationToken);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party products endpoint.");
+            logger.LogError(ex, "Unable to reach the products service.");
             return Result.Failure<Product>(
-                Error.Failure("Products.Unreachable", "Unable to reach the third-party products endpoint."));
+                Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 

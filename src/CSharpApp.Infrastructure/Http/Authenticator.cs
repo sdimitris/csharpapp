@@ -28,8 +28,7 @@ public sealed class Authenticator(
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.BuildErrorAsync(cancellationToken);
-                logger.LogError("Authentication against the third-party service failed: {Message}", error.Message);
+                var error = await response.BuildErrorAsync(logger, cancellationToken);
                 return Result.Failure<AuthLoginResponse>(error);
             }
 
@@ -37,15 +36,16 @@ public sealed class Authenticator(
 
             if (payload is null || string.IsNullOrWhiteSpace(payload.AccessToken))
             {
-                return Result.Failure<AuthLoginResponse>(Error.Unexpected("Auth.EmptyToken", "The authentication endpoint returned an empty token."));
+                logger.LogError("Authentication succeeded but returned an empty token.");
+                return Result.Failure<AuthLoginResponse>(Error.Unexpected("Auth.EmptyToken", "Authentication is currently unavailable."));
             }
 
             return Result.Success(payload);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
-            logger.LogError(ex, "Unable to reach the third-party authentication endpoint.");
-            return Result.Failure<AuthLoginResponse>(Error.Failure("Auth.Unreachable", "Unable to reach the third-party authentication endpoint."));
+            logger.LogError(ex, "Unable to reach the authentication service.");
+            return Result.Failure<AuthLoginResponse>(Error.Failure("Auth.Unreachable", "Authentication is currently unavailable."));
         }
     }
 }

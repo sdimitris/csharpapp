@@ -27,6 +27,8 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseStatusCodePages();
+
 app.UseRequestPerformanceLogging();
 
 var versionedEndpointRouteBuilder = app.NewVersionedApi();
