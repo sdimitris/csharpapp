@@ -1,28 +1,27 @@
 namespace CSharpApp.Core.Dtos;
 
-public sealed class Product
+/// <summary>
+/// This API's own internal representation of a product, decoupled from the third-party
+/// Platzi Fake Store API's <see cref="ProductFakePlatziDto"/> shape. Used across the
+/// Application/Core layers (services, mappings) so a change in the provider's response
+/// never silently changes internal behavior — only the Infrastructure layer knows about
+/// <see cref="ProductFakePlatziDto"/>.
+/// </summary>
+public sealed class ProductDto
 {
-    [JsonPropertyName("id")]
     public int? Id { get; set; }
 
-    [JsonPropertyName("title")]
     public string? Title { get; set; }
 
-    [JsonPropertyName("price")]
     public int? Price { get; set; }
 
-    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("images")]
-    public List<string> Images { get; } = [];
+    public List<string> Images { get; set; } = [];
 
-    [JsonPropertyName("creationAt")]
     public DateTime? CreationAt { get; set; }
 
-    [JsonPropertyName("updatedAt")]
     public DateTime? UpdatedAt { get; set; }
 
-    [JsonPropertyName("category")]
-    public Category? Category { get; set; }
+    public CategoryDto? Category { get; set; }
 }

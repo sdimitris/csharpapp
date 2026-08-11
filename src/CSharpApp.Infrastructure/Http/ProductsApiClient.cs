@@ -11,51 +11,59 @@ public sealed class ProductsApiClient(HttpClient httpClient, IOptions<RestApiSet
 {
     private readonly RestApiSettings _settings = settings.Value;
 
-    public async Task<Result<IReadOnlyCollection<Product>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyCollection<ProductDto>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default)
     {
         try
         {
             var response = await httpClient.GetAsync(BuildListUrl(_settings.Products!, offset, limit), cancellationToken);
-            var result = await response.ToResultAsync<List<Product>>(logger, cancellationToken);
+            var result = await response.ToResultAsync<List<ProductFakePlatziDto>>(logger, cancellationToken);
 
             return result.IsSuccess
-                ? Result.Success<IReadOnlyCollection<Product>>(result.Value)
-                : Result.Failure<IReadOnlyCollection<Product>>(result.Error);
+                ? Result.Success<IReadOnlyCollection<ProductDto>>(result.Value.Select(p => p.ToDto()).ToList())
+                : Result.Failure<IReadOnlyCollection<ProductDto>>(result.Error);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
             logger.LogError(ex, "Unable to reach the products service.");
-            return Result.Failure<IReadOnlyCollection<Product>>(
+            return Result.Failure<IReadOnlyCollection<ProductDto>>(
                 Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
-    public async Task<Result<Product>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<ProductDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
             var response = await httpClient.GetAsync($"{_settings.Products}/{id}", cancellationToken);
-            return await response.ToResultAsync<Product>(logger, cancellationToken);
+            var result = await response.ToResultAsync<ProductFakePlatziDto>(logger, cancellationToken);
+
+            return result.IsSuccess
+                ? Result.Success(result.Value.ToDto())
+                : Result.Failure<ProductDto>(result.Error);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
             logger.LogError(ex, "Unable to reach the products service.");
-            return Result.Failure<Product>(
+            return Result.Failure<ProductDto>(
                 Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }
 
-    public async Task<Result<Product>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<ProductDto>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync(_settings.Products, request, cancellationToken);
-            return await response.ToResultAsync<Product>(logger, cancellationToken);
+            var response = await httpClient.PostAsJsonAsync(_settings.Products, request.ToFakePlatziRequest(), cancellationToken);
+            var result = await response.ToResultAsync<ProductFakePlatziDto>(logger, cancellationToken);
+
+            return result.IsSuccess
+                ? Result.Success(result.Value.ToDto())
+                : Result.Failure<ProductDto>(result.Error);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or BrokenCircuitException)
         {
             logger.LogError(ex, "Unable to reach the products service.");
-            return Result.Failure<Product>(
+            return Result.Failure<ProductDto>(
                 Error.Failure("Service.Unreachable", "The service is currently unavailable."));
         }
     }

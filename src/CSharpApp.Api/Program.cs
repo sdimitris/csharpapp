@@ -10,7 +10,12 @@ builder.Services.AddDefaultConfiguration(builder.Configuration);
 builder.Services.AddHttpConfiguration();
 builder.Services.AddApplicationServices();
 builder.Services.AddProblemDetails();
-builder.Services.AddApiVersioning();
+builder.Services.AddApiVersioning()
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 var app = builder.Build();
 

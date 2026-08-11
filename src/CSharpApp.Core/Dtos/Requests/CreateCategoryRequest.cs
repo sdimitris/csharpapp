@@ -1,13 +1,13 @@
 namespace CSharpApp.Core.Dtos.Requests;
 
 /// <summary>
-/// Payload required to create a new category against the third-party catalog service.
+/// This API's own internal payload to create a new category, decoupled from the
+/// third-party catalog service's wire shape (<c>CreateCategoryFakePlatziRequest</c> in
+/// Infrastructure).
 /// </summary>
 public sealed class CreateCategoryRequest
 {
-    [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
-    [JsonPropertyName("image")]
     public string Image { get; set; } = string.Empty;
 }

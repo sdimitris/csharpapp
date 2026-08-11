@@ -1,4 +1,4 @@
-namespace CSharpApp.Infrastructure.Http;
+namespace CSharpApp.Infrastructure.Extensions;
 
 /// <summary>
 /// Maps raw <see cref="HttpResponseMessage"/> instances returned by the upstream service into

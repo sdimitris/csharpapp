@@ -13,15 +13,15 @@ public sealed class ProductsService(IProductsApiClient apiClient, ICacheService 
 {
     private static readonly TimeSpan ItemExpiration = TimeSpan.FromMinutes(5);
 
-    public Task<Result<IReadOnlyCollection<Product>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default)
+    public Task<Result<IReadOnlyCollection<ProductDto>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default)
         => apiClient.GetAllAsync(offset, limit, cancellationToken);
 
-    public Task<Result<Product>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Result<ProductDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var cacheKey = CacheKeys.Product(id);
         return cacheService.GetOrCreateAsync(cacheKey, ItemExpiration, () => apiClient.GetByIdAsync(id, cancellationToken));
     }
 
-    public Task<Result<Product>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<ProductDto>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
         => apiClient.CreateAsync(request, cancellationToken);
 }

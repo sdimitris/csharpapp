@@ -1,7 +1,8 @@
 using System.Net;
-using CSharpApp.Core.Dtos.Auth;
 using CSharpApp.Core.Settings;
+using CSharpApp.Infrastructure.Configuration;
 using CSharpApp.Infrastructure.Http;
+using CSharpApp.Infrastructure.Http.Dtos;
 using CSharpApp.Tests.Infrastructure.Support;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ public class AuthenticatorTests
     [Fact]
     public async Task LoginAsync_ShouldReturnAccessToken_WhenLoginSucceeds()
     {
-        var response = new AuthLoginResponse { AccessToken = "token", RefreshToken = "refresh" };
+        var response = new AuthLoginResponseFakePlatziDto { AccessToken = "token", RefreshToken = "refresh" };
         var (sut, handler) = CreateSut(FakeHttpMessageHandler.ReturningJson(response));
 
         var result = await sut.LoginAsync();
@@ -57,7 +58,7 @@ public class AuthenticatorTests
     [Fact]
     public async Task LoginAsync_ShouldReturnFailure_WhenResponseHasNoAccessToken()
     {
-        var response = new AuthLoginResponse { AccessToken = string.Empty, RefreshToken = "refresh" };
+        var response = new AuthLoginResponseFakePlatziDto { AccessToken = string.Empty, RefreshToken = "refresh" };
         var (sut, _) = CreateSut(FakeHttpMessageHandler.ReturningJson(response));
 
         var result = await sut.LoginAsync();

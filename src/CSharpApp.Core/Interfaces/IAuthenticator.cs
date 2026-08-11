@@ -1,5 +1,3 @@
-using CSharpApp.Core.Dtos.Auth;
-
 namespace CSharpApp.Core.Interfaces;
 
 /// <summary>
@@ -9,5 +7,5 @@ namespace CSharpApp.Core.Interfaces;
 /// </summary>
 public interface IAuthenticator
 {
-    Task<Result<AuthLoginResponse>> LoginAsync(CancellationToken cancellationToken = default);
+    Task<Result<AuthTokenDto>> LoginAsync(CancellationToken cancellationToken = default);
 }

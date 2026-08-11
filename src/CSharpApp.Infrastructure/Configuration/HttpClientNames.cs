@@ -1,4 +1,4 @@
-namespace CSharpApp.Infrastructure.Http;
+namespace CSharpApp.Infrastructure.Configuration;
 
 internal static class HttpClientNames
 {

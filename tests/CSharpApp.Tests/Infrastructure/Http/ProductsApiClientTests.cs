@@ -1,8 +1,8 @@
 using System.Net;
-using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Dtos.Requests;
 using CSharpApp.Core.Settings;
 using CSharpApp.Infrastructure.Http;
+using CSharpApp.Infrastructure.Http.Dtos;
 using CSharpApp.Tests.Infrastructure.Support;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ public class ProductsApiClientTests
     [Fact]
     public async Task GetAllAsync_ShouldReturnSuccess_WhenApiRespondsOk()
     {
-        var products = new List<Product> { new() { Id = 1, Title = "Product 1" } };
+        var products = new List<ProductFakePlatziDto> { new() { Id = 1, Title = "Product 1" } };
         var handler = FakeHttpMessageHandler.ReturningJson(products);
         var sut = CreateSut(handler);
 
@@ -57,7 +57,7 @@ public class ProductsApiClientTests
     [Fact]
     public async Task CreateAsync_ShouldPostToProductsPath_AndReturnCreatedProduct()
     {
-        var created = new Product { Id = 10, Title = "New" };
+        var created = new ProductFakePlatziDto { Id = 10, Title = "New" };
         var handler = FakeHttpMessageHandler.ReturningJson(created, HttpStatusCode.Created);
         var sut = CreateSut(handler);
 
@@ -85,7 +85,7 @@ public class ProductsApiClientTests
     [Fact]
     public async Task GetAllAsync_ShouldAppendOffsetAndLimit_WhenSupplied()
     {
-        var products = new List<Product> { new() { Id = 1, Title = "Product 1" } };
+        var products = new List<ProductFakePlatziDto> { new() { Id = 1, Title = "Product 1" } };
         var handler = FakeHttpMessageHandler.ReturningJson(products);
         var sut = CreateSut(handler);
 
@@ -99,7 +99,7 @@ public class ProductsApiClientTests
     [Fact]
     public async Task GetAllAsync_ShouldNotAppendQueryString_WhenOffsetAndLimitAreNull()
     {
-        var products = new List<Product> { new() { Id = 1, Title = "Product 1" } };
+        var products = new List<ProductFakePlatziDto> { new() { Id = 1, Title = "Product 1" } };
         var handler = FakeHttpMessageHandler.ReturningJson(products);
         var sut = CreateSut(handler);
 

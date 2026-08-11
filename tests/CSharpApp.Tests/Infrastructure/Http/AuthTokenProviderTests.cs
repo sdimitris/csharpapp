@@ -1,5 +1,5 @@
 using CSharpApp.Core.Common;
-using CSharpApp.Core.Dtos.Auth;
+using CSharpApp.Core.Dtos;
 using CSharpApp.Core.Interfaces;
 using CSharpApp.Infrastructure.Http;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -21,7 +21,7 @@ public class AuthTokenProviderTests
         return $"{header}.{payload}.";
     }
 
-    private static (AuthTokenProvider Sut, Mock<IAuthenticator> Authenticator) CreateSut(AuthLoginResponse response)
+    private static (AuthTokenProvider Sut, Mock<IAuthenticator> Authenticator) CreateSut(AuthTokenDto response)
     {
         var authenticator = new Mock<IAuthenticator>();
         authenticator
@@ -36,7 +36,7 @@ public class AuthTokenProviderTests
     public async Task GetAccessTokenAsync_ShouldLoginAndReturnToken_OnFirstCall()
     {
         var token = BuildJwt(DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds());
-        var (sut, authenticator) = CreateSut(new AuthLoginResponse { AccessToken = token, RefreshToken = "refresh" });
+        var (sut, authenticator) = CreateSut(new AuthTokenDto { AccessToken = token, RefreshToken = "refresh" });
 
         var result = await sut.GetAccessTokenAsync();
 
@@ -49,7 +49,7 @@ public class AuthTokenProviderTests
     public async Task GetAccessTokenAsync_ShouldReuseCachedToken_WhenNotExpired()
     {
         var token = BuildJwt(DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds());
-        var (sut, authenticator) = CreateSut(new AuthLoginResponse { AccessToken = token, RefreshToken = "refresh" });
+        var (sut, authenticator) = CreateSut(new AuthTokenDto { AccessToken = token, RefreshToken = "refresh" });
 
         await sut.GetAccessTokenAsync();
         await sut.GetAccessTokenAsync();
@@ -62,7 +62,7 @@ public class AuthTokenProviderTests
     public async Task InvalidateToken_ShouldForceNewLogin_OnNextCall()
     {
         var token = BuildJwt(DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds());
-        var (sut, authenticator) = CreateSut(new AuthLoginResponse { AccessToken = token, RefreshToken = "refresh" });
+        var (sut, authenticator) = CreateSut(new AuthTokenDto { AccessToken = token, RefreshToken = "refresh" });
 
         await sut.GetAccessTokenAsync();
         sut.InvalidateToken();
@@ -77,7 +77,7 @@ public class AuthTokenProviderTests
         var authenticator = new Mock<IAuthenticator>();
         authenticator
             .Setup(a => a.LoginAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure<AuthLoginResponse>(Error.Failure("Auth.Unauthorized", "invalid credentials")));
+            .ReturnsAsync(Result.Failure<AuthTokenDto>(Error.Failure("Auth.Unauthorized", "invalid credentials")));
 
         var sut = new AuthTokenProvider(authenticator.Object, NullLogger<AuthTokenProvider>.Instance);
 

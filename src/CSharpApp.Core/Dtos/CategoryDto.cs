@@ -1,19 +1,18 @@
 namespace CSharpApp.Core.Dtos;
 
-public sealed class Category
+/// <summary>
+/// This API's own internal representation of a category, decoupled from the third-party
+/// Platzi Fake Store API's <see cref="CategoryFakePlatziDto"/> shape.
+/// </summary>
+public sealed class CategoryDto
 {
-    [JsonPropertyName("id")]
     public int? Id { get; set; }
 
-    [JsonPropertyName("name")]
     public string? Name { get; set; }
 
-    [JsonPropertyName("image")]
     public string? Image { get; set; }
 
-    [JsonPropertyName("creationAt")]
     public DateTime? CreationAt { get; set; }
 
-    [JsonPropertyName("updatedAt")]
     public DateTime? UpdatedAt { get; set; }
 }

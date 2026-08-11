@@ -8,9 +8,9 @@ namespace CSharpApp.Core.Interfaces;
 /// </summary>
 public interface IProductsApiClient
 {
-    Task<Result<IReadOnlyCollection<Product>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyCollection<ProductDto>>> GetAllAsync(int? offset = null, int? limit = null, CancellationToken cancellationToken = default);
 
-    Task<Result<Product>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<Result<ProductDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-    Task<Result<Product>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default);
+    Task<Result<ProductDto>> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default);
 }

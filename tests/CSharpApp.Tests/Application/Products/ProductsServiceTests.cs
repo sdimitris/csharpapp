@@ -21,7 +21,7 @@ public class ProductsServiceTests
     {
         var apiClient = new Mock<IProductsApiClient>();
         apiClient.Setup(x => x.GetAllAsync(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<IReadOnlyCollection<Product>>([new Product { Id = 1, Title = "A" }]));
+            .ReturnsAsync(Result.Success<IReadOnlyCollection<ProductDto>>([new ProductDto { Id = 1, Title = "A" }]));
 
         var sut = new ProductsService(apiClient.Object, CreateCache());
 
@@ -37,8 +37,8 @@ public class ProductsServiceTests
     public async Task GetByIdAsync_ShouldCacheEachIdSeparately()
     {
         var apiClient = new Mock<IProductsApiClient>();
-        apiClient.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success(new Product { Id = 1 }));
-        apiClient.Setup(x => x.GetByIdAsync(2, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success(new Product { Id = 2 }));
+        apiClient.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success(new ProductDto { Id = 1 }));
+        apiClient.Setup(x => x.GetByIdAsync(2, It.IsAny<CancellationToken>())).ReturnsAsync(Result.Success(new ProductDto { Id = 2 }));
 
         var sut = new ProductsService(apiClient.Object, CreateCache());
 
@@ -55,7 +55,7 @@ public class ProductsServiceTests
     {
         var apiClient = new Mock<IProductsApiClient>();
         apiClient.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure<Product>(Error.NotFound("Products.NotFound", "missing")));
+            .ReturnsAsync(Result.Failure<ProductDto>(Error.NotFound("Products.NotFound", "missing")));
 
         var sut = new ProductsService(apiClient.Object, CreateCache());
 
@@ -70,7 +70,7 @@ public class ProductsServiceTests
     {
         var apiClient = new Mock<IProductsApiClient>();
         apiClient.Setup(x => x.CreateAsync(It.IsAny<CreateProductRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success(new Product { Id = 1 }));
+            .ReturnsAsync(Result.Success(new ProductDto { Id = 1 }));
 
         var sut = new ProductsService(apiClient.Object, CreateCache());
 
