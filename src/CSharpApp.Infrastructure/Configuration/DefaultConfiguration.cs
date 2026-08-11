@@ -7,6 +7,7 @@ public static class DefaultConfiguration
         services.Configure<RestApiSettings>(configuration.GetSection(nameof(RestApiSettings)));
         services.Configure<HttpClientSettings>(configuration.GetSection(nameof(HttpClientSettings)));
 
+        services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<IAuthTokenProvider, AuthTokenProvider>();
 
         return services;
